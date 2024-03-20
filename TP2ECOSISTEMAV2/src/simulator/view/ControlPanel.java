@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
 import simulator.misc.Utils;
@@ -40,7 +41,7 @@ class ControlPanel extends JPanel {
 		_quitButton = new JButton();
 		_quitButton.setToolTipText("Quit");
 		_quitButton.setIcon(new ImageIcon("resources/icons/exit.png"));
-		_quitButton.addActionListener((e) -> Utils.quit(this));
+		_quitButton.addActionListener((e) -> ViewUtils.quit(this));
 		_toolaBar.add(_quitButton);
 		// TODO Inicializar _fc con una instancia de JFileChooser. Para que siempre
 		// abre en la carpeta de ejemplos puedes usar:
@@ -50,6 +51,23 @@ class ControlPanel extends JPanel {
 		// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio
 		// de regiones
 	}
-	// TODO el resto de métodos van aquí…
+	
+	
+	private void run_sim(int n, double dt) {
+		if (n > 0 && !_stopped) {
+		try {
+		_ctrl.advance(dt);
+		SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
+		} catch (Exception e) {
+		// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
+		// que corresponda
+		// TODO activar todos los botones
+		_stopped = true;
+		}
+		} else {
+		// TODO activar todos los botones
+		_stopped = true;
+		}
+		}
 }
 
