@@ -294,8 +294,6 @@ public class Main {
 			Simulator _sim = new Simulator(_default_cols, _default_rows, _default_width, _default_height, _animal_factory, _regions_factory);
 			_ctrl = new Controller(_sim);
 		}
-		
-		SwingUtilities.invokeAndWait(() -> new MainWindow(_ctrl));
 	}
 
 	private static void start(String[] args) throws Exception {
