@@ -128,7 +128,15 @@ public class MapViewer extends AbstractMapViewer {
 		//
 		// h: toggle help
 		// s: show animals of a specific state
-
+		if (_showHelp) {
+			showHelp(gr);
+		}
+		
+	}
+	
+	private void showHelp(Graphics2D g) {
+		String _help = new String("h : toogle help\n" + "s: show animals of a specific state");
+		g.drawString(_help, 10, 20); // 10, 20 at the top left corner
 	}
 
 	private boolean visible(AnimalInfo a) {
@@ -140,7 +148,8 @@ public class MapViewer extends AbstractMapViewer {
 	private void drawObjects(Graphics2D g, Collection<AnimalInfo> animals, Double time) {
 
 		// TODO Dibujar el grid de regiones
-
+		
+		
 		// Dibujar los animales
 		for (AnimalInfo a : animals) {
 

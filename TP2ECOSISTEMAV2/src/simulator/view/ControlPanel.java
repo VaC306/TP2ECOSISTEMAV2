@@ -29,6 +29,8 @@ class ControlPanel extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final double _dtDEFAULT = 0.03;
+	private static final int _nDEFAULT = 60;
 	private Controller _ctrl;
 	private ChangeRegionsDialog _changeRegionsDialog;
 	private JToolBar _toolaBar;
@@ -49,6 +51,8 @@ class ControlPanel extends JPanel {
 	
 	ControlPanel(Controller ctrl) {
 		_ctrl = ctrl;
+		_dt = _dtDEFAULT;
+		_n = _nDEFAULT;
 		initGUI();
 	}
 
@@ -139,7 +143,6 @@ class ControlPanel extends JPanel {
 			_quitButton.setEnabled(false);
 			_fileButton.setEnabled(false);
 					
-					
 			_stopped = false;
 			run_sim(_n, _dt); 
 		});
@@ -202,15 +205,27 @@ class ControlPanel extends JPanel {
 		_ctrl.advance(dt);
 		SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
 		} catch (Exception e) {
-		// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
-		// que corresponda
-		// TODO activar todos los botones
-		_stopped = true;
+			// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
+			// que corresponda
+			ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+			// TODO activar todos los botones
+			_viewerButton.setEnabled(true);
+			_regionButton.setEnabled(true);
+			_quitButton.setEnabled(true);
+			_fileButton.setEnabled(true);
+			
+			_stopped = true;
+			}
+		} 
+		else {
+			// TODO activar todos los botones
+			_viewerButton.setEnabled(true);
+			_regionButton.setEnabled(true);
+			_quitButton.setEnabled(true);
+			_fileButton.setEnabled(true);
+			
+			_stopped = true;
 		}
-		} else {
-		// TODO activar todos los botones
-		_stopped = true;
-		}
-		}
+	}
 }
 

@@ -51,16 +51,16 @@ public class MainWindow extends JFrame {
 		InfoTable _species = new InfoTable("Species", new SpeciesTableModel(_ctrl));
 		// add border
 		_species.setBorder(BorderFactory.createTitledBorder(_blackBorder, "Species", TitledBorder.LEFT, TitledBorder.TOP));
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(500, 250));
 		contentPanel.add(_species);
 		
 		
 		// TODO crear la tabla de regiones.
 		// Usa setPreferredSize(new Dimension(500, 250)) para fijar su tamañ
-		InfoTable _regiones = new InfoTable("Regions", new SpeciesTableModel(_ctrl));
+		InfoTable _regiones = new InfoTable("Regions", new RegionsTableModel(_ctrl));
 		// add border
 		_regiones.setBorder(BorderFactory.createTitledBorder(_blackBorder, "Regions", TitledBorder.LEFT, TitledBorder.TOP));
-		setPreferredSize(new Dimension(800, 600));
+		setPreferredSize(new Dimension(500, 250));
 		contentPanel.add(_regiones);
 		
 		// TODO llama a ViewUtils.quit(MainWindow.this) en el método windowClosing
@@ -106,6 +106,7 @@ public class MainWindow extends JFrame {
 		
 		setPreferredSize (new Dimension(700, 300));
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		setLocationRelativeTo(getParent());
 		pack();
 		setVisible(true);
 	}

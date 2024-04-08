@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import simulator.control.Controller;
 import simulator.model.AnimalInfo;
@@ -26,15 +27,20 @@ class MapWindow extends JFrame implements EcoSysObserver {
 		_ctrl = ctrl;
 		_parent = parent;
 		intiGUI();
+		
 		// TODO registrar this como observador
+		_ctrl.addObserver(this);
 	}
 	
 	private void intiGUI() {
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		// TODO poner contentPane como mainPanel
+		setContentPane(mainPanel);
+		
 		// TODO crear el viewer y añadirlo a mainPanel (en el centro)
-		// TODO en el método windowClosing, eliminar ‘MapWindow.this’ de los
-		// observadores
+		_viewer = new MapViewer();
+		
+		// TODO en el método windowClosing, eliminar ‘MapWindow.this’ de los observadores
 		addWindowListener(new WindowListener() {
 
 			@Override
@@ -45,8 +51,7 @@ class MapWindow extends JFrame implements EcoSysObserver {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				// TODO Auto-generated method stub
-				
+				_ctrl.removeObserver(MapWindow.this);
 			}
 
 			@Override
@@ -91,8 +96,7 @@ class MapWindow extends JFrame implements EcoSysObserver {
 	
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		// TODO Auto-generated method stub
-		
+		SwingUtilities.invokeLater(() -> { _viewer.reset(time, map, animals);; pack(); });
 	}
 
 	@Override
@@ -115,8 +119,7 @@ class MapWindow extends JFrame implements EcoSysObserver {
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		// TODO Auto-generated method stub
-		
+		SwingUtilities.invokeLater(() -> { _viewer.update(animals, time); });
 	}
 
 }
