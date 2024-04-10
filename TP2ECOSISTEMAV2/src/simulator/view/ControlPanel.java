@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -22,6 +23,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.json.JSONObject;
+
 import simulator.control.Controller;
 
 class ControlPanel extends JPanel {
@@ -30,7 +33,7 @@ class ControlPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final double _dtDEFAULT = 0.03;
-	private static final int _nDEFAULT = 60;
+	private static final int _nDEFAULT = 10;
 	private Controller _ctrl;
 	private ChangeRegionsDialog _changeRegionsDialog;
 	private JToolBar _toolaBar;
@@ -79,7 +82,6 @@ class ControlPanel extends JPanel {
 		_fc = new JFileChooser();
 		_fc.setCurrentDirectory(new File(System.getProperty("user.dir") + "/resources/examples"));
 		_fileButton.setIcon(new ImageIcon("resources/icons/open.png"));
-		//JSONObject _in = ;
 		_fileButton.addActionListener((e) ->
 		{
 			_fc.showOpenDialog(ViewUtils.getWindow(this));
@@ -87,7 +89,7 @@ class ControlPanel extends JPanel {
 			if(_fc.getSelectedFile() != null)
 			{
 				//_ctrl.reset(); //ver como conseguir la info del mapa
-				//_ctrl.loadData();
+				_ctrl.load_data(new JSONObject(_fc.getSelectedFile()));
 			}
 			else
 			{
@@ -122,6 +124,7 @@ class ControlPanel extends JPanel {
 		_regionButton.setIcon(new ImageIcon("resources/icons/regions.png"));
 		_toolaBar.add(_regionButton);
 		_regionButton.setToolTipText("Select force laws for groups");
+		_changeRegionsDialog = new ChangeRegionsDialog(_ctrl); 
 		_regionButton.addActionListener((e) ->
 		{
 			_changeRegionsDialog.open(ViewUtils.getWindow(this));

@@ -104,7 +104,7 @@ public class MainWindow extends JFrame {
 			
 		});
 		
-		setPreferredSize (new Dimension(700, 300));
+		setPreferredSize(new Dimension(800, 600));
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(getParent());
 		pack();

@@ -69,7 +69,7 @@ public class MapViewer extends AbstractMapViewer {
 	}
 
 	private void initGUI() {
-
+		
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -81,6 +81,8 @@ public class MapViewer extends AbstractMapViewer {
 				case 's':
 					// TODO Cambiar _currState al siguiente (de manera circular). Después de null
 					// viene el primero de Animal.State.values() y después del último viene null.
+					//_currState = State.values()[];
+					
 					repaint();
 				default:
 				}
@@ -135,19 +137,32 @@ public class MapViewer extends AbstractMapViewer {
 	}
 	
 	private void showHelp(Graphics2D g) {
-		String _help = new String("h : toogle help\n" + "s: show animals of a specific state");
+		String _help = new String("h : toogle help");
+		String _show = new String("s: show animals of a specific state");
+		g.setColor(Color.RED);
 		g.drawString(_help, 10, 20); // 10, 20 at the top left corner
+		g.drawString(_show, 10, 40);
 	}
 
 	private boolean visible(AnimalInfo a) {
 		// TODO Devolver true si el animal es visible, es decir si _currState es null o
 		// su estado es igual a _currState.
-		return true;
+		if(_currState == null || a.get_state().equals(_currState))
+			return true;
+		else
+			return false;
 	}
 
 	private void drawObjects(Graphics2D g, Collection<AnimalInfo> animals, Double time) {
 
 		// TODO Dibujar el grid de regiones
+		for (int i = 0; i < _cols; i++) {
+	        for (int j = 0; j < _rows; j++) {
+	            // Por ejemplo, puedes usar g.drawRect() para dibujar un rectángulo para cada región.
+	            // Calcula las coordenadas de la región según 'i' y 'j' y usa _rwidth y _rheight.
+	        	g.drawRect(i*_rwidth, j*_rheight, _rwidth, _rheight);
+	        }
+	    }
 		
 		
 		// Dibujar los animales
@@ -162,21 +177,37 @@ public class MapViewer extends AbstractMapViewer {
 
 			// TODO Si esp_info es null, añade una entrada correspondiente al mapa. Para el
 			// color usa ViewUtils.get_color(a.get_genetic_code())
-
+			if (esp_info == null) {
+	            Color color = ViewUtils.get_color(a.get_genetic_code());
+	            esp_info = new SpeciesInfo(color);
+	            _kindsInfo.put(a.get_genetic_code(), esp_info);
+	        }
+			
 			// TODO Incrementar el contador de la especie (es decir el contador dentro de
 			// tag_info)
-
+			esp_info._count++;
+			
 			// TODO Dibijar el animal en la posicion correspondiente, usando el color
 			// tag_info._color. Su tamaño tiene que ser relativo a su edad, por ejemplo
 			// edad/2+2. Se puede dibujar usando fillRoundRect, fillRect o fillOval.
-
+			int size = (int) (a.get_age() / 2) + 2;
+	        g.setColor(esp_info._color);
+	        g.fillOval((int) a.get_position().getX(), (int) a.get_position().getY(), size, size);
+			
 		}
 
 		// TODO Dibujar la etiqueta del estado visible, sin no es null.
-
+		if (_currState != null) {
+	        g.drawString(_currState.toString(), 10, 40);
+	    }
+		
 		// TODO Dibujar la etiqueta del tiempo. Para escribir solo 3 decimales puede
 		// usar String.format("%.3f", time)
-
+		 if (time != null) {
+		        String timeString = String.format("%.3f", time);
+		        g.drawString("Time: " + timeString, 10, 60);
+		 }
+		
 		// TODO Dibujar la información de todas la especies. Al final de cada iteración
 		// poner el contador de la especie correspondiente a 0 (para resetear el cuento)
 		for (Entry<String, SpeciesInfo> e : _kindsInfo.entrySet()) {
@@ -194,12 +225,21 @@ public class MapViewer extends AbstractMapViewer {
 	public void update(List<AnimalInfo> objs, Double time) {
 		// TODO Almacenar objs y time en los atributos correspondientes y llamar a
 		// repaint() para redibujar el componente.
+		_objs = objs;
+		_time = time;
+		repaint();
 	}
 
 	@Override
 	public void reset(double time, MapInfo map, List<AnimalInfo> animals) {
 		// TODO Actualizar los atributos _width, _height, _cols, _rows, etc.
-
+		_width = map.get_width();
+		_height = map.get_height();
+		_cols = map.get_cols();
+		_rows = map.get_rows();
+		_rwidth = map.get_region_width();
+		_rheight = map.get_region_height();
+		
 		// Esto cambia el tamaño del componente, y así cambia el tamaño de la ventana
 		// porque en MapWindow llamamos a pack() después de llamar a reset
 		setPreferredSize(new Dimension(map.get_width(), map.get_height()));

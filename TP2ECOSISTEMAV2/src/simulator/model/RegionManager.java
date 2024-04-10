@@ -216,11 +216,11 @@ public class RegionManager implements AnimalMapView, Iterable<MapInfo.RegionData
 	         	public MapInfo.RegionData next() {
 	         		MapInfo.RegionData regionData = MapInfo.RegionData.createRegionData(currentRow, currentCol, _regions[currentRow][currentCol]);
 	         		currentCol++;
-	         	if (currentCol >= _cols) {
-	         		currentCol = 0;
-	         		currentRow++;
-	         	}
-	         	return regionData;
+	         		if (currentCol >= _cols) {
+	         			currentCol = 0;
+	         			currentRow++;
+	         		}
+	         		return regionData;
 	         	}
 		 };
 	}
