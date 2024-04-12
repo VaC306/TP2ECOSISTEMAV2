@@ -124,9 +124,9 @@ class ControlPanel extends JPanel {
 		_regionButton.setIcon(new ImageIcon("resources/icons/regions.png"));
 		_toolaBar.add(_regionButton);
 		_regionButton.setToolTipText("Select force laws for groups");
-		_changeRegionsDialog = new ChangeRegionsDialog(_ctrl); 
 		_regionButton.addActionListener((e) ->
 		{
+			_changeRegionsDialog = new ChangeRegionsDialog(_ctrl); 
 			_changeRegionsDialog.open(ViewUtils.getWindow(this));
 		});
 		
