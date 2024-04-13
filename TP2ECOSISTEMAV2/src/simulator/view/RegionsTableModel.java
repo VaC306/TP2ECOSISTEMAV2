@@ -39,6 +39,9 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 		_animals = new ArrayList<>();
 		_regions = new RegionData[_rowMax][_colMax];
 		
+		_row = 0;
+		_col = 0;
+		
 		_header = new String[Diet.values().length + 3];
 		for(int i = 0 ;i <= _header.length - 1; i++)
 		{
@@ -80,43 +83,42 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	        return null;
 	    }
 	    
-	    /*switch(columnIndex)
+	    
+	    switch(columnIndex)
 	    {
-	    
-	    }//hacer esto*/
-	    
-	    // Si columnIndex es 0, 1 o 2, devolver el número de fila, número de columna o descripción de la región respectivamente
-	    if (columnIndex == 0) {
-	        return _row; // Número de fila
-	    } else if (columnIndex == 1) {
-	        return _col; // Número de columna
-	    } else if (columnIndex == 2) {
-	        return _regions[_row][_col].r().toString(); // Descripción de la región
-	    } else {
-	        // Índice de columna correspondiente a una dieta
-	        // Calcular el índice de la dieta en base al índice de columna
-	        int dietIndex = columnIndex - 3;
-	        Diet diet = Diet.values()[dietIndex];
-	        
-	        _col++;
-	        if(_col == _colMax)
-	        {
-	        	_col = 0;
-	        	_row++;
-	        }
-	        
-	        int _count = 0;
-	        // Iterar sobre todas las filas y columnas de la matriz de regiones
-	        
-	        _count = 0;
-	        // Contar animales con la dieta específica en la región actual
-	        RegionData regionData = _regions[_row][_col];
-	        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
-	        	if (animal.get_diet() == diet) {
-	        		_count++;
-	        	}
-	        } 
-	        return _count;
+	    	// Si columnIndex es 0, 1 o 2, devolver el número de fila, número de columna o descripción de la región respectivamente
+	    	case 0:
+	    		// Iterar sobre todas las filas y columnas de la matriz de regiones
+	    		_col++;
+		        if(_col == _colMax)
+		        {
+		        	_col = 0;
+		        	_row++;
+		        }
+	    		return _row;
+	    	case 1:
+	    		
+	    		return _col;
+	    	case 2:
+	    		
+	    		return _regions[_row][_col].r().toString();
+	    	default:
+	    		// Índice de columna correspondiente a una dieta
+		        // Calcular el índice de la dieta en base al índice de columna
+		        int dietIndex = columnIndex - 3;
+		        Diet diet = Diet.values()[dietIndex];
+		      
+		        int _count = 0;
+		        
+		        _count = 0;
+		        // Contar animales con la dieta específica en la región actual
+		        RegionData regionData = _regions[_row][_col];
+		        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
+		        	if (animal.get_diet() == diet) {
+		        		_count++;
+		        	}
+		        } 
+		        return _count;
 	    }
 	}
 

@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import simulator.control.Controller;
@@ -171,9 +172,29 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 			setVisible(false);
 		});
 		
-		//boton ok
+		//boton TODO ok terminarlo
 		_ok = new JButton("OK");
-				
+		_ok.addActionListener((e) -> {
+			//crear el JSONArray general que se construye con getJSON()
+			JSONArray jdata = new JSONArray(getJSON());
+			
+			
+			
+			//Crear el JSONObject spec que contiene el type y data
+			JSONObject spec = new JSONObject();
+			
+			//jdata.put("spec", spec);
+			
+			JSONObject region_data = new JSONObject();
+			JSONObject region_type = new JSONObject();
+			
+			spec.put("type", region_type);
+			spec.put("data", region_data);
+			
+			//Crear el JSONObject regions que contiene row, col, spec
+			JSONArray regions = new JSONArray();
+			regions.put(spec);
+		});		
 		
 		
 		_buttons_panel.add(_ok);
@@ -184,6 +205,30 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		setResizable(false);
 		setVisible(false);
 	}
+	
+	//TODO revisar funcion
+	public String getJSON() {
+		StringBuilder s = new StringBuilder();
+		s.append('[');
+		s.append('{');
+		for (int i = 0; i < _dataTableModel.getRowCount(); i++) {
+			String k = _dataTableModel.getValueAt(i, 0).toString();
+			String v = _dataTableModel.getValueAt(i, 1).toString();
+			if (!v.isEmpty()) {
+				s.append('"');
+				s.append(k);
+				s.append('"');
+				s.append(':');
+				s.append(v);
+				s.append(',');
+			}
+		}
+		
+		s.append('}');
+		s.append(']');
+		return s.toString();
+	}
+	
 	public void open(Frame parent) {
 		setLocation(//
 		parent.getLocation().x + parent.getWidth() / 2 - getWidth() / 2, //
