@@ -18,15 +18,19 @@ public abstract class Builder<T> {
 	
 	public JSONObject get_info() {
 		JSONObject info = new JSONObject();
+		JSONObject data = new JSONObject();
+		
 		info.put("type", _type_tag);
 		info.put("desc", _desc);
-		JSONObject data = new JSONObject();
+		
 		fill_in_data(data);
+		
 		info.put("data", data);
 		return info;
 	}
 	
 	protected void fill_in_data(JSONObject o) {
+		
 	}
 	
 	@Override

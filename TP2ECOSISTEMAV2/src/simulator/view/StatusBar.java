@@ -26,9 +26,9 @@ class StatusBar extends JPanel implements EcoSysObserver {
 	JLabel _dimension;
 	
 	StatusBar(Controller ctrl) {
-	initGUI();
-	// TODO registrar this como observador
-	ctrl.addObserver(this);
+		initGUI();
+		// TODO registrar this como observador
+		ctrl.addObserver(this);
 	}
 	private void initGUI() {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT));

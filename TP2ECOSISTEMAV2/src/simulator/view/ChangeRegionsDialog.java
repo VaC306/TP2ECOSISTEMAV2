@@ -2,6 +2,8 @@ package simulator.view;
 
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -111,7 +113,9 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 				return column == 1;
 			}
 		};
+		
 		_dataTableModel.setColumnIdentifiers(_headers);
+		
 		// TODO crear un JTable que use _dataTableModel, y añadirlo al diálogo
 		// _regionsModel es un modelo de combobox que incluye los tipos de regiones		
 		JTable _table = new JTable(_dataTableModel);
@@ -124,6 +128,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		_table_panel.add(_dataTableScroll);
 		
 		_regionsModel = new DefaultComboBoxModel<>();
+		
 		// TODO añadir la descripción de todas las regiones a _regionsModel, para eso
 		// usa la clave “desc” o “type” de los JSONObject en _regionsInfo,
 		for (JSONObject info : _regionsInfo)
@@ -133,11 +138,26 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		
 		// ya que estos nos dan información sobre lo que puede crear la factoría.
 		// TODO crear un combobox que use _regionsModel y añadirlo al diálogo.
-		JComboBox<String> _lawsCombo = new JComboBox<>(_regionsModel);
+		JComboBox<String> _regionsCombo = new JComboBox<>(_regionsModel);
 		JLabel _regionsLabel = new JLabel("Region type: ");
 		_regionsLabel.setAlignmentX(CENTER_ALIGNMENT);
 		_combo_panel.add(_regionsLabel);
-		_combo_panel.add(_lawsCombo);
+		_combo_panel.add(_regionsCombo);
+		
+		_regionsCombo.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				JSONObject info = _regionsInfo.get(_regionsCombo.getSelectedIndex());
+				JSONObject data = info.getJSONObject("data");
+				
+				for(String s : data.keySet())
+				{
+					
+				}
+			}
+		});
 		
 		// TODO crear 4 modelos de combobox para _fromRowModel, _toRowModel,
 		// _fromColModel y _toColModel.
@@ -175,25 +195,37 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		//boton TODO ok terminarlo
 		_ok = new JButton("OK");
 		_ok.addActionListener((e) -> {
-			//crear el JSONArray general que se construye con getJSON()
-			JSONArray jdata = new JSONArray(getJSON());
 			
-			
+			//Crear el JSONObject regions general
+			//JSO
 			
 			//Crear el JSONObject spec que contiene el type y data
 			JSONObject spec = new JSONObject();
 			
-			//jdata.put("spec", spec);
-			
-			JSONObject region_data = new JSONObject();
-			JSONObject region_type = new JSONObject();
+			JSONObject region_data = new JSONObject(get_json());
+			String region_type =  _regionsInfo.get(_regionsCombo.getSelectedIndex()).getString("type"); 
 			
 			spec.put("type", region_type);
 			spec.put("data", region_data);
 			
+			System.out.println(spec);
 			//Crear el JSONObject regions que contiene row, col, spec
-			JSONArray regions = new JSONArray();
-			regions.put(spec);
+			JSONArray coordenadas = new JSONArray();
+			
+			int row_from = (int) _fromRowCombo.getSelectedItem();
+			int row_to = (int) _toRowCombo.getSelectedItem();
+			int col_from = (int) _fromColCombo.getSelectedItem();
+			int col_to = (int) _toColCombo.getSelectedItem();
+			
+			coordenadas.put(spec);
+			
+			
+			// pasalo a _ctrl.set_regions para cambiar las regiones
+			//_ctrl.set_regions(region_type);
+						
+			// cambiar el estado y ocultar el dialogo
+			_status = 1;
+			setVisible(false);
 		});		
 		
 		
@@ -206,10 +238,8 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		setVisible(false);
 	}
 	
-	//TODO revisar funcion
-	public String getJSON() {
+	public String get_json() {
 		StringBuilder s = new StringBuilder();
-		s.append('[');
 		s.append('{');
 		for (int i = 0; i < _dataTableModel.getRowCount(); i++) {
 			String k = _dataTableModel.getValueAt(i, 0).toString();
@@ -223,9 +253,11 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 				s.append(',');
 			}
 		}
-		
+
+		if (s.length() > 1)
+			s.deleteCharAt(s.length() - 1);
 		s.append('}');
-		s.append(']');
+
 		return s.toString();
 	}
 	

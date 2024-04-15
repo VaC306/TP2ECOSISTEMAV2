@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
@@ -32,6 +33,7 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	private int _rowMax;
 	private int _row;
 	private int _col;
+	private int _length;
 	
 	
 	RegionsTableModel(Controller ctrl) {
@@ -63,7 +65,7 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	
 	@Override
 	public int getRowCount() {
-		return _regions == null ? 0 : _rowMax * _colMax;
+		return _regions == null ? 0 : _length;
 	}
 
 	@Override
@@ -83,18 +85,17 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	        return null;
 	    }
 	    
+	 // Iterar sobre todas las filas y columnas de la matriz de regiones
+	    int _row = rowIndex / _colMax;
+        int _col = rowIndex % _colMax;
+        if (_row >= _rowMax || _col >= _colMax) {
+            return null;
+        }
 	    
 	    switch(columnIndex)
 	    {
 	    	// Si columnIndex es 0, 1 o 2, devolver el número de fila, número de columna o descripción de la región respectivamente
 	    	case 0:
-	    		// Iterar sobre todas las filas y columnas de la matriz de regiones
-	    		_col++;
-		        if(_col == _colMax)
-		        {
-		        	_col = 0;
-		        	_row++;
-		        }
 	    		return _row;
 	    	case 1:
 	    		
@@ -103,47 +104,43 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	    		
 	    		return _regions[_row][_col].r().toString();
 	    	default:
-	    		// Índice de columna correspondiente a una dieta
-		        // Calcular el índice de la dieta en base al índice de columna
-		        int dietIndex = columnIndex - 3;
-		        Diet diet = Diet.values()[dietIndex];
-		      
-		        int _count = 0;
-		        
-		        _count = 0;
-		        // Contar animales con la dieta específica en la región actual
-		        RegionData regionData = _regions[_row][_col];
-		        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
-		        	if (animal.get_diet() == diet) {
-		        		_count++;
-		        	}
-		        } 
-		        return _count;
+	    		if(rowIndex < _length)
+	    		{
+	    			// Índice de columna correspondiente a una dieta
+			        // Calcular el índice de la dieta en base al índice de columna
+			        int dietIndex = columnIndex - 3;
+			        Diet diet = Diet.values()[dietIndex];
+			      
+			        int _count = 0;
+			        
+			        _count = 0;
+			        // Contar animales con la dieta específica en la región actual
+			        RegionData regionData = _regions[_row][_col];
+			        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
+			        	if (animal.get_diet() == diet) {
+			        		_count++;
+			        	}
+			        } 
+			        return _count;
+	    		}
+	    		else
+	    			return null;
 	    }
 	}
-
+	
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		_regions = new RegionData[map.get_rows()][map.get_cols()];
-		Iterator<RegionData> _it = map.iterator();
-		int i = 0;
-		int j = 0;
-		
-		while(_it.hasNext())
-		{
-			while(j <= map.get_cols() && i <= map.get_rows() - 1)
-			{
-				_regions[i][j] = _it.next();
-				j++;
-				if(j == map.get_cols())
-				{
-					j = 0;
-					i++;
-				}
-			}
-		}
-		_colMax = map.get_cols();
 		_rowMax = map.get_rows();
+        _colMax = map.get_cols();
+        _length = _rowMax * _colMax;
+        _regions = new RegionData[_rowMax][_colMax];
+        Iterator<RegionData> it = map.iterator();
+        for (int i = 0; i < _rowMax; i++) {
+            for (int j = 0; j < _colMax && it.hasNext(); j++) {
+                _regions[i][j] = it.next();
+            }
+        }
+		
 		fireTableStructureChanged();
 	}
 
@@ -151,19 +148,20 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
 		_colMax = map.get_cols();
 		_rowMax = map.get_rows();
+		_length = _rowMax * _colMax;
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		
-		
+		_animals.add(a);
+		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
 		
-		
+		fireTableStructureChanged();
 	}
 
 	@Override

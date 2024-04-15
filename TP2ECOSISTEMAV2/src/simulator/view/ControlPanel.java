@@ -24,6 +24,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import simulator.control.Controller;
 
@@ -56,10 +57,14 @@ class ControlPanel extends JPanel {
 		_ctrl = ctrl;
 		_dt = _dtDEFAULT;
 		_n = _nDEFAULT;
-		initGUI();
+		try {
+			initGUI();
+		} catch (FileNotFoundException e) {
+			ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+		}
 	}
 
-	private void initGUI() {
+	private void initGUI() throws FileNotFoundException {
 		setLayout(new BorderLayout());
 		_toolaBar = new JToolBar();
 		add(_toolaBar, BorderLayout.PAGE_START);
@@ -88,12 +93,13 @@ class ControlPanel extends JPanel {
 			
 			if(_fc.getSelectedFile() != null)
 			{
-				//_ctrl.reset(); //ver como conseguir la info del mapa
-				_ctrl.load_data(new JSONObject(_fc.getSelectedFile()));
-			}
-			else
-			{
-				ViewUtils.showErrorMsg(this, "INPUT FILE IS NULL");
+				_ctrl.reset( 20, 15, 800, 600);
+				try {
+					FileInputStream _input = new FileInputStream(_fc.getSelectedFile().getPath());
+					_ctrl.load_data(new JSONObject(new JSONTokener(_input)));
+				} catch (FileNotFoundException e1) {
+					ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+				}
 			}
 		});
 		
@@ -101,10 +107,7 @@ class ControlPanel extends JPanel {
 		_toolaBar.add(_fileButton);
 		
 		_toolaBar.addSeparator();
-		
-		// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio
-		// de regiones	
-				
+			
 		
 		//viewer button
 		_viewerButton = new JButton();
@@ -118,6 +121,8 @@ class ControlPanel extends JPanel {
 			viewer.setVisible(true);
 			viewer.setLocationRelativeTo(null);
 		});
+		
+		// TODO Inicializar _changeRegionsDialog con instancias del diálogo de cambio de regiones	
 		
 		//regions button
 		_regionButton = new JButton();
@@ -211,6 +216,7 @@ class ControlPanel extends JPanel {
 			// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
 			// que corresponda
 			ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+			
 			// TODO activar todos los botones
 			_viewerButton.setEnabled(true);
 			_regionButton.setEnabled(true);
