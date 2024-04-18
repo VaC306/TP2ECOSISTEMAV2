@@ -48,6 +48,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 	private JButton _ok;
 	private JButton _cancel;
 	
+	private int _selectedRegionIndex;
 	private	int _rows;
 	private	int _cols;
 	
@@ -149,12 +150,14 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 			@Override
 			public void actionPerformed(ActionEvent e) 
 			{
-				JSONObject info = _regionsInfo.get(_regionsCombo.getSelectedIndex());
+				_selectedRegionIndex = _regionsCombo.getSelectedIndex();
+				JSONObject info = _regionsInfo.get(_selectedRegionIndex);
 				JSONObject data = info.getJSONObject("data");
 				
-				for(String s : data.keySet())
+				for(String key : data.keySet())
 				{
-					
+					String value = data.getString(key);
+		            _dataTableModel.addRow(new Object[] { key, "", value });
 				}
 			}
 		});
@@ -208,7 +211,6 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 			spec.put("type", region_type);
 			spec.put("data", region_data);
 			
-			System.out.println(spec);
 			//Crear el JSONObject regions que contiene row, col, spec
 			JSONArray coordenadas = new JSONArray();
 			
@@ -272,11 +274,11 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		_regionsModel.removeAllElements();
+		/*_regionsModel.removeAllElements();
 		_fromRowModel.removeAllElements();
 		_toRowModel.removeAllElements();
 		_fromColModel.removeAllElements();
-		_toRowModel.removeAllElements();
+		_toRowModel.removeAllElements();*/
 		
 		for (int i = 0; i < map.get_rows(); i++)
         {
@@ -333,7 +335,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

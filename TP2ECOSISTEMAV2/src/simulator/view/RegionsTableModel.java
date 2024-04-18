@@ -160,7 +160,7 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
-		
+		_regions[row][col] = new RegionData(row, col, r);
 		fireTableStructureChanged();
 	}
 
