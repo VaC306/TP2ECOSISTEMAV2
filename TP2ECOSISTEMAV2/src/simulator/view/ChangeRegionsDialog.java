@@ -44,6 +44,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 	private DefaultTableModel _dataTableModel;
 	private Controller _ctrl;
 	private List<JSONObject> _regionsInfo;
+	JComboBox<String> _regionsCombo;
 	private String[] _headers = { "Key", "Value", "Description" };
 	private JButton _ok;
 	private JButton _cancel;
@@ -139,7 +140,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		
 		// ya que estos nos dan información sobre lo que puede crear la factoría.
 		// TODO crear un combobox que use _regionsModel y añadirlo al diálogo.
-		JComboBox<String> _regionsCombo = new JComboBox<>(_regionsModel);
+		_regionsCombo = new JComboBox<>(_regionsModel);
 		JLabel _regionsLabel = new JLabel("Region type: ");
 		_regionsLabel.setAlignmentX(CENTER_ALIGNMENT);
 		_combo_panel.add(_regionsLabel);
@@ -153,7 +154,7 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 				_selectedRegionIndex = _regionsCombo.getSelectedIndex();
 				JSONObject info = _regionsInfo.get(_selectedRegionIndex);
 				JSONObject data = info.getJSONObject("data");
-				
+				_dataTableModel.setRowCount(0);
 				for(String key : data.keySet())
 				{
 					String value = data.getString(key);
@@ -199,32 +200,51 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 		_ok = new JButton("OK");
 		_ok.addActionListener((e) -> {
 			
-			//Crear el JSONObject regions general
-			//JSO
+			//Crear el JSONObject retornado general
+			JSONObject ret = new JSONObject();
+			
+			//crear el JSONObject regions
+			JSONObject regions = new JSONObject();
+			JSONArray array = new JSONArray();
 			
 			//Crear el JSONObject spec que contiene el type y data
 			JSONObject spec = new JSONObject();
 			
 			JSONObject region_data = new JSONObject(get_json());
-			String region_type =  _regionsInfo.get(_regionsCombo.getSelectedIndex()).getString("type"); 
+			JSONObject region_type =  _regionsInfo.get(_regionsCombo.getSelectedIndex()); 
 			
-			spec.put("type", region_type);
+			spec.put("type", region_type.get("type"));
 			spec.put("data", region_data);
 			
 			//Crear el JSONObject regions que contiene row, col, spec
-			JSONArray coordenadas = new JSONArray();
+			JSONArray row = new JSONArray();
+			JSONArray col = new JSONArray();
 			
 			int row_from = (int) _fromRowCombo.getSelectedItem();
 			int row_to = (int) _toRowCombo.getSelectedItem();
 			int col_from = (int) _fromColCombo.getSelectedItem();
 			int col_to = (int) _toColCombo.getSelectedItem();
 			
-			coordenadas.put(spec);
+			row.put(0, row_from);
+			row.put(1, row_to);
 			
+			col.put(0, col_from);
+			col.put(1, col_to);
+			
+			
+			ret.put("row", row);
+			ret.put("col", col);
+			ret.put("spec", spec);
+			
+			array.put(ret);
+			regions.put("regions", array);
+			
+			System.out.println(regions);
 			
 			// pasalo a _ctrl.set_regions para cambiar las regiones
 			//_ctrl.set_regions(region_type);
-						
+			_ctrl.set_regions(regions);
+			
 			// cambiar el estado y ocultar el dialogo
 			_status = 1;
 			setVisible(false);
@@ -274,11 +294,45 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
-		/*_regionsModel.removeAllElements();
+		
+		//_regionsModel.removeAllElements();
 		_fromRowModel.removeAllElements();
 		_toRowModel.removeAllElements();
 		_fromColModel.removeAllElements();
-		_toRowModel.removeAllElements();*/
+		_toRowModel.removeAllElements();
+		
+		
+		for (int i = 0; i < map.get_rows(); i++)
+        {
+            _fromRowModel.addElement(i);
+            _toRowModel.addElement(i);
+        }
+		
+		for (int i = 0; i < map.get_cols(); i++)
+        {
+            _fromColModel.addElement(i);
+            _toColModel.addElement(i);
+        }
+		
+		
+			_selectedRegionIndex = _regionsCombo.getSelectedIndex();
+			JSONObject info = _regionsInfo.get(_selectedRegionIndex);
+            JSONObject data = info.getJSONObject("data");
+            for(String key : data.keySet())
+            {
+            	String value = data.getString(key);
+             _dataTableModel.addRow(new Object[] { key, "", value });
+            }
+	}
+
+
+	@Override
+	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
+		_regionsModel.removeAllElements();
+		_fromRowModel.removeAllElements();
+		_toRowModel.removeAllElements();
+		_fromColModel.removeAllElements();
+		_toRowModel.removeAllElements();
 		
 		for (int i = 0; i < map.get_rows(); i++)
         {
@@ -306,50 +360,19 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 
 
 	@Override
-	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		_regionsModel.removeAllElements();
-		_fromRowModel.removeAllElements();
-		_toRowModel.removeAllElements();
-		_fromColModel.removeAllElements();
-		_toRowModel.removeAllElements();
-		
-		for (int i = 0; i < map.get_rows(); i++)
-        {
-            _fromRowModel.addElement(i);
-            _toRowModel.addElement(i);
-        }
-		
-		for (int i = 0; i < map.get_cols(); i++)
-        {
-            _fromColModel.addElement(i);
-            _toColModel.addElement(i);
-        }
-		
-		for (JSONObject info : _regionsInfo)
-        {
-            _regionsModel.addElement(info.getString("type"));  
-            JSONObject data = info.getJSONObject("data");
-        }
-	}
-
-
-	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		
 		
 	}
 
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
-		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		// TODO Auto-generated method stub
 		_rows = map.get_rows();
 	}
 	

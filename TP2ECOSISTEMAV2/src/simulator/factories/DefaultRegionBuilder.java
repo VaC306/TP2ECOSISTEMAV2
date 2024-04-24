@@ -17,4 +17,9 @@ public class DefaultRegionBuilder extends Builder<Region>{
 		return new DefaultRegion();
 	}
 	
+	@Override
+	protected void fill_in_data(JSONObject o) {
+		o.put("factor","Food increase factor (optional with default 2.0)");
+		o.put("food", "Initial amount of food (optional with default 1000.0");
+	}
 }

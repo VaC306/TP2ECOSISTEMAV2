@@ -43,7 +43,7 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 				_header[i] = "Species";
 			else
 				_header[i] = State.values()[i-1].toString();
-		}		
+		}
 		
 		// TODO registrar this como observador
 		_ctrl.addObserver(this);
@@ -52,7 +52,7 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	
 	@Override
 	public int getRowCount() {
-		return _animals == null ? 0 : _animals.size();
+		return _genetic == null ? 0 : _genetic.size();
 	}
 
 	@Override
@@ -75,12 +75,6 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 				if (_animals == null) {
 	                return null;
 	            }
-				
-				for(AnimalInfo a : _animals)
-				{
-					if(!_genetic.contains(a.get_genetic_code()))
-						_genetic.add(a.get_genetic_code());
-				}
 				if(rowIndex < _genetic.size())
 					return _genetic.get(rowIndex);
 				else
@@ -116,17 +110,33 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 		{
 			_animals.add(a);
 		}
+		for(AnimalInfo a : _animals)
+		{
+			if(!_genetic.contains(a.get_genetic_code()))
+				_genetic.add(a.get_genetic_code());
+		}
+		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
 		_animals.clear();
+		for(AnimalInfo a : animals)
+		{
+			_animals.add(a);
+		}
+		for(AnimalInfo a : _animals)
+		{
+			if(!_genetic.contains(a.get_genetic_code()))
+				_genetic.add(a.get_genetic_code());
+		}
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		_animals.add(a);
+		if(!_animals.contains(a))
+			_animals.add(a);
 		fireTableStructureChanged();
 	}
 
@@ -138,6 +148,11 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
+		_animals.clear();
+		for(AnimalInfo a : animals)
+		{
+			_animals.add(a);
+		}
 		fireTableStructureChanged();
 		
 	}

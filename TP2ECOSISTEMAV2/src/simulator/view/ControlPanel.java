@@ -34,7 +34,7 @@ class ControlPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final double _dtDEFAULT = 0.03;
-	private static final int _nDEFAULT = 10;
+	private static final int _nDEFAULT = 10000;
 	private Controller _ctrl;
 	private ChangeRegionsDialog _changeRegionsDialog;
 	private JToolBar _toolaBar;
@@ -97,6 +97,7 @@ class ControlPanel extends JPanel {
 				try {
 					FileInputStream _input = new FileInputStream(_fc.getSelectedFile().getPath());
 					_ctrl.load_data(new JSONObject(new JSONTokener(_input)));
+					
 				} catch (FileNotFoundException e1) {
 					ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
 				}
@@ -210,7 +211,12 @@ class ControlPanel extends JPanel {
 	private void run_sim(int n, double dt) {
 		if (n > 0 && !_stopped) {
 		try {
-		_ctrl.advance(dt);
+			long startTime = System.currentTimeMillis();
+			_ctrl.advance(dt);
+			long stepTimeMs = System.currentTimeMillis() - startTime;
+			long delay = (long) (dt * 1000 - stepTimeMs);
+			Thread.sleep(delay > 0 ? delay : 0);
+
 		SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
 		} catch (Exception e) {
 			// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
