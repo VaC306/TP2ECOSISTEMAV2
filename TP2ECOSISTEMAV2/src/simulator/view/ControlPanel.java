@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Map;
 
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -93,13 +92,15 @@ class ControlPanel extends JPanel {
 			
 			if(_fc.getSelectedFile() != null)
 			{
-				_ctrl.reset( 20, 15, 800, 600);
 				try {
-					FileInputStream _input = new FileInputStream(_fc.getSelectedFile().getPath());
-					_ctrl.load_data(new JSONObject(new JSONTokener(_input)));
+				FileInputStream _input = new FileInputStream(_fc.getSelectedFile().getPath());
+				JSONObject _inJSON = new JSONObject(new JSONTokener(_input));
+				
+				_ctrl.reset( _inJSON.getInt("cols"), _inJSON.getInt("rows"), _inJSON.getInt("width"), _inJSON.getInt("height"));
+				_ctrl.load_data(_inJSON);
 					
 				} catch (FileNotFoundException e1) {
-					ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+					ViewUtils.showErrorMsg("ha ocurrido un error al insertar un archivo!");
 				}
 			}
 		});
@@ -183,7 +184,7 @@ class ControlPanel extends JPanel {
 		steps.setValue(_n);
 		steps.setToolTipText("Simulation steps to run: 1-10000");
 		Dimension d = steps.getPreferredSize();  
-	    d.width = 50;  
+	    d.width = 65;  
 	    steps.setPreferredSize(d); //size of steps spinner
 		_toolaBar.add(steps);
 		

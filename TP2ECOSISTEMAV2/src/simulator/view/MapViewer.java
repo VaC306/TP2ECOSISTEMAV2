@@ -3,9 +3,9 @@ package simulator.view;
 import simulator.model.Animal;
 import simulator.model.AnimalInfo;
 import simulator.model.MapInfo;
-import simulator.model.State;
 
 import java.awt.*;
+import java.awt.Taskbar.State;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -63,7 +63,9 @@ public class MapViewer extends AbstractMapViewer {
 
 	// Indica si mostramos el texto la ayuda o no
 	private boolean _showHelp;
-
+	
+	int index = 0;
+	
 	public MapViewer() {
 		initGUI();
 	}
@@ -82,6 +84,15 @@ public class MapViewer extends AbstractMapViewer {
 					// TODO Cambiar _currState al siguiente (de manera circular). Después de null
 					// viene el primero de Animal.State.values() y después del último viene null.
 					//_currState = State.values()[];
+					
+					if(index == simulator.model.State.values().length)
+					{
+						_currState = null;
+						index = 0;
+					}
+					
+					_currState = simulator.model.State.values()[index];
+					index++;					
 					
 					repaint();
 				default:
@@ -137,11 +148,11 @@ public class MapViewer extends AbstractMapViewer {
 	}
 	
 	private void showHelp(Graphics2D g) {
-		String _help = new String("h : toogle help");
+		String _help = new String("h : toggle help");
 		String _show = new String("s: show animals of a specific state");
 		g.setColor(Color.RED);
-		g.drawString(_help, 10, 20); // 10, 20 at the top left corner
-		g.drawString(_show, 10, 40);
+		g.drawString(_help, 10, 15); // 10, 20 at the top left corner
+		g.drawString(_show, 10, 27);
 	}
 
 	private boolean visible(AnimalInfo a) {
@@ -205,12 +216,19 @@ public class MapViewer extends AbstractMapViewer {
 		// usar String.format("%.3f", time)
 		 if (time != null) {
 		        String timeString = String.format("%.3f", time);
-		        g.drawString("Time: " + timeString, 10, 60);
+		        g.setColor(Color.PINK);
+		        
+		        g.drawString("Time: " + timeString, 10, 575);
 		 }
 		
 		// TODO Dibujar la información de todas la especies. Al final de cada iteración
 		// poner el contador de la especie correspondiente a 0 (para resetear el cuento)
+		 int sep = 0;
 		for (Entry<String, SpeciesInfo> e : _kindsInfo.entrySet()) {
+			g.setColor(e.getValue()._color);
+			g.drawString(e.getKey() + ": " + e.getValue()._count, 10, 550+sep);
+			e.getValue()._count = 0;
+			sep+=13;
 		}
 	}
 

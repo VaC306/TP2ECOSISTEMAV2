@@ -50,16 +50,12 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 	private JButton _cancel;
 	
 	private int _selectedRegionIndex;
-	private	int _rows;
-	private	int _cols;
 	
 	
 	ChangeRegionsDialog(Controller ctrl) {
 		super((Frame)null, true);
 		_ctrl = ctrl;
 		initGUI();
-		_rows = 0;
-		_cols = 0;
 		// TODO registrar this como observer;
 		_ctrl.addObserver(this);
 	}
@@ -315,14 +311,14 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
         }
 		
 		
-			_selectedRegionIndex = _regionsCombo.getSelectedIndex();
+			/*_selectedRegionIndex = _regionsCombo.getSelectedIndex();
 			JSONObject info = _regionsInfo.get(_selectedRegionIndex);
             JSONObject data = info.getJSONObject("data");
             for(String key : data.keySet())
             {
             	String value = data.getString(key);
              _dataTableModel.addRow(new Object[] { key, "", value });
-            }
+            }*/
 	}
 
 
@@ -373,7 +369,6 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
-		_rows = map.get_rows();
 	}
 	
 }

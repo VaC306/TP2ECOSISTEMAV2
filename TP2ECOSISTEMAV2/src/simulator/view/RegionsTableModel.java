@@ -4,19 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
 import simulator.model.AnimalInfo;
-import simulator.model.DefaultRegion;
 import simulator.model.Diet;
 import simulator.model.EcoSysObserver;
 import simulator.model.MapInfo;
 import simulator.model.MapInfo.RegionData;
-import simulator.model.Region;
 import simulator.model.RegionInfo;
-import simulator.model.State;
 
 class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	// TODO definir atributos necesarios
@@ -26,23 +22,16 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	 */
 	private static final long serialVersionUID = 1L;
 	String[] _header;
-	List<AnimalInfo> _animals;
 	
 	private RegionData[][] _regions;
 	private int _colMax;
 	private int _rowMax;
-	private int _row;
-	private int _col;
 	private int _length;
 	
 	
 	RegionsTableModel(Controller ctrl) {
 		// TODO inicializar estructuras de datos correspondientes
-		_animals = new ArrayList<>();
 		_regions = new RegionData[_rowMax][_colMax];
-		
-		_row = 0;
-		_col = 0;
 		
 		_header = new String[Diet.values().length + 3];
 		for(int i = 0 ;i <= _header.length - 1; i++)
@@ -130,17 +119,16 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
+		_colMax = map.get_cols();
 		_rowMax = map.get_rows();
-        _colMax = map.get_cols();
-        _length = _rowMax * _colMax;
-        _regions = new RegionData[_rowMax][_colMax];
-        Iterator<RegionData> it = map.iterator();
-        for (int i = 0; i < _rowMax; i++) {
-            for (int j = 0; j < _colMax && it.hasNext(); j++) {
-                _regions[i][j] = it.next();
-            }
-        }
-		
+		_length = _rowMax * _colMax;
+		 _regions = new RegionData[_rowMax][_colMax];
+	        Iterator<RegionData> it = map.iterator();
+	        for (int i = 0; i < _rowMax; i++) {
+	            for (int j = 0; j < _colMax && it.hasNext(); j++) {
+	                _regions[i][j] = it.next();
+	            }
+	        }
 		fireTableStructureChanged();
 	}
 
@@ -149,12 +137,18 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 		_colMax = map.get_cols();
 		_rowMax = map.get_rows();
 		_length = _rowMax * _colMax;
+		 _regions = new RegionData[_rowMax][_colMax];
+	        Iterator<RegionData> it = map.iterator();
+	        for (int i = 0; i < _rowMax; i++) {
+	            for (int j = 0; j < _colMax && it.hasNext(); j++) {
+	                _regions[i][j] = it.next();
+	            }
+	        }
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
-		_animals.add(a);
 		fireTableStructureChanged();
 	}
 

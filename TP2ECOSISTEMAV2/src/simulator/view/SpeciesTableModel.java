@@ -6,11 +6,9 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import simulator.control.Controller;
-import simulator.model.Animal;
 import simulator.model.AnimalInfo;
 import simulator.model.EcoSysObserver;
 import simulator.model.MapInfo;
-import simulator.model.MapInfo.RegionData;
 import simulator.model.RegionInfo;
 import simulator.model.State;
 

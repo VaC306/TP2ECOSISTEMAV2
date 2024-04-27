@@ -17,6 +17,10 @@ import simulator.model.MapInfo;
 import simulator.model.RegionInfo;
 
 class MapWindow extends JFrame implements EcoSysObserver {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Controller _ctrl;
 	private AbstractMapViewer _viewer;
 	private Frame _parent;
@@ -102,7 +106,7 @@ class MapWindow extends JFrame implements EcoSysObserver {
 
 	@Override
 	public void onReset(double time, MapInfo map, List<AnimalInfo> animals) {
-		// TODO Auto-generated method stub
+		SwingUtilities.invokeLater(() -> { _viewer.reset(time, map, animals);; pack(); });
 		
 	}
 
