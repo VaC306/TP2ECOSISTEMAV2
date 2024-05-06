@@ -212,17 +212,18 @@ class ControlPanel extends JPanel {
 	private void run_sim(int n, double dt) {
 		if (n > 0 && !_stopped) {
 		try {
+			
 			long startTime = System.currentTimeMillis();
 			_ctrl.advance(dt);
 			long stepTimeMs = System.currentTimeMillis() - startTime;
 			long delay = (long) (dt * 1000 - stepTimeMs);
 			Thread.sleep(delay > 0 ? delay : 0);
-
-		SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
+			SwingUtilities.invokeLater(() -> run_sim(n - 1, dt));
+			
 		} catch (Exception e) {
 			// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
 			// que corresponda
-			ViewUtils.showErrorMsg(TOOL_TIP_TEXT_KEY);
+			ViewUtils.showErrorMsg("ha habido un error con el run del simulador!");
 			
 			// TODO activar todos los botones
 			_viewerButton.setEnabled(true);

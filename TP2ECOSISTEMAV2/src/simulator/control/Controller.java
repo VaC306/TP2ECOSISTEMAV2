@@ -38,7 +38,7 @@ public class Controller {
 		
 		JSONArray _animales = data.getJSONArray("animals");
 		
-		for(int i = 0; i < _animales.length(); ++i)
+		for(int i = 0; i < _animales.length(); i++)
 		{
 			JSONObject _animal = _animales.getJSONObject(i);
 			int cantidad = _animal.getInt("amount");

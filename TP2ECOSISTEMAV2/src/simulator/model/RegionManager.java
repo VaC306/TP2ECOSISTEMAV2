@@ -72,11 +72,10 @@ public class RegionManager implements AnimalMapView, Iterable<MapInfo.RegionData
 	void register_animal(Animal a)
 	{
 		a.init(this);
-		
 		Region _region = region_animal(a);
-		
 		_region.add_animal(a);
 		_animal_region.put(a, _region);
+		update_animal_region(a);
 	}
 	
 	void unregister_animal(Animal a)

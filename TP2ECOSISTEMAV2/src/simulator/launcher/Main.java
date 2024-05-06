@@ -96,12 +96,12 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parse_help_option(line, cmdLineOptions);
+			parse_mode_option(line);
 			parse_in_file_option(line);
 			parse_out_file_option(line);
 			parse_time_option(line);
 			parse_delta_time_option(line);
 			parse_simple_viewer_option(line);
-			parse_mode_option(line);
 			
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -293,6 +293,7 @@ public class Main {
 		{
 			Simulator _sim = new Simulator(_default_cols, _default_rows, _default_width, _default_height, _animal_factory, _regions_factory);
 			_ctrl = new Controller(_sim);
+			SwingUtilities.invokeAndWait(() -> new MainWindow(_ctrl));
 		}
 	}
 

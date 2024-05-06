@@ -235,8 +235,6 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
 			array.put(ret);
 			regions.put("regions", array);
 			
-			System.out.println(regions);
-			
 			// pasalo a _ctrl.set_regions para cambiar las regiones
 			//_ctrl.set_regions(region_type);
 			_ctrl.set_regions(regions);
@@ -309,16 +307,6 @@ class ChangeRegionsDialog extends JDialog implements EcoSysObserver {
             _fromColModel.addElement(i);
             _toColModel.addElement(i);
         }
-		
-		
-			/*_selectedRegionIndex = _regionsCombo.getSelectedIndex();
-			JSONObject info = _regionsInfo.get(_selectedRegionIndex);
-            JSONObject data = info.getJSONObject("data");
-            for(String key : data.keySet())
-            {
-            	String value = data.getString(key);
-             _dataTableModel.addRow(new Object[] { key, "", value });
-            }*/
 	}
 
 

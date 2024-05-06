@@ -51,9 +51,10 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 		_regmanager.register_animal(a);
 		l.add(a);
 		
+		List<AnimalInfo> animals = new ArrayList<>(l);
 		for(EcoSysObserver o: _observers)
 		{
-			o.onAnimalAdded(_time, _regmanager, Collections.unmodifiableList(l), a);
+			o.onAnimalAdded(_time, _regmanager, animals, a);
 		}
 	}
 	
@@ -133,10 +134,10 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 			}
 		}
 		
-		
+		List<AnimalInfo> animals = new ArrayList<>(l);
 		for(EcoSysObserver o: _observers)
 		{
-			o.onAvanced(_time, _regmanager, Collections.unmodifiableList(l), dt);
+			o.onAvanced(_time, _regmanager, animals, dt);
 		}
 		
 	}
@@ -147,9 +148,10 @@ public class Simulator implements JSONable, Observable<EcoSysObserver> {
 		_regmanager = new RegionManager(cols, rows, width, height); //nuevo reg manager con este tamaño
 		_time = 0.0; //time a 0.0
 		
+		List<AnimalInfo> animals = new ArrayList<>(l);
 		for(EcoSysObserver o: _observers)
 		{
-			o.onReset(_time, _regmanager, Collections.unmodifiableList(l));
+			o.onReset(_time, _regmanager, animals);
 		}
 		
 	}

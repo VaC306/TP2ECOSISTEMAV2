@@ -92,7 +92,7 @@ public class MapViewer extends AbstractMapViewer {
 					}
 					
 					_currState = simulator.model.State.values()[index];
-					index++;					
+					index++;
 					
 					repaint();
 				default:
@@ -215,10 +215,8 @@ public class MapViewer extends AbstractMapViewer {
 		// TODO Dibujar la etiqueta del tiempo. Para escribir solo 3 decimales puede
 		// usar String.format("%.3f", time)
 		 if (time != null) {
-		        String timeString = String.format("%.3f", time);
 		        g.setColor(Color.PINK);
-		        
-		        g.drawString("Time: " + timeString, 10, 575);
+		        g.drawString("Time: " + String.format("%.3f", time), 10, 575);
 		 }
 		
 		// TODO Dibujar la información de todas la especies. Al final de cada iteración
@@ -251,7 +249,7 @@ public class MapViewer extends AbstractMapViewer {
 	@Override
 	public void reset(double time, MapInfo map, List<AnimalInfo> animals) {
 		// TODO Actualizar los atributos _width, _height, _cols, _rows, etc.
-		_width = map.get_width();
+		_width =map.get_width();
 		_height = map.get_height();
 		_cols = map.get_cols();
 		_rows = map.get_rows();
