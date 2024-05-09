@@ -1,6 +1,5 @@
 package simulator.view;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +26,7 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	private int _colMax;
 	private int _rowMax;
 	private int _length;
+	private int _count;
 	
 	
 	RegionsTableModel(Controller ctrl) {
@@ -95,16 +95,14 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	    	default:
 	    		if(rowIndex < _length)
 	    		{
-	    			// Índice de columna correspondiente a una dieta
 			        // Calcular el índice de la dieta en base al índice de columna
 			        int dietIndex = columnIndex - 3;
 			        Diet diet = Diet.values()[dietIndex];
-			      
-			        int _count = 0;
 			        
 			        _count = 0;
 			        // Contar animales con la dieta específica en la región actual
 			        RegionData regionData = _regions[_row][_col];
+			        
 			        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
 			        	if (animal.get_diet() == diet) {
 			        		_count++;

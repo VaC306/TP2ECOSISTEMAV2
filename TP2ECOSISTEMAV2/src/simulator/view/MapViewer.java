@@ -90,8 +90,9 @@ public class MapViewer extends AbstractMapViewer {
 						_currState = null;
 						index = 0;
 					}
+					else
+						_currState = simulator.model.State.values()[index];
 					
-					_currState = simulator.model.State.values()[index];
 					index++;
 					
 					repaint();

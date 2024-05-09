@@ -223,6 +223,7 @@ class ControlPanel extends JPanel {
 		} catch (Exception e) {
 			// TODO llamar a ViewUtils.showErrorMsg con el mensaje de error
 			// que corresponda
+			e.printStackTrace();
 			ViewUtils.showErrorMsg("ha habido un error con el run del simulador!");
 			
 			// TODO activar todos los botones
