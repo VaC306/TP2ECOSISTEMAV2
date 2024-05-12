@@ -1,7 +1,9 @@
 package simulator.view;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -26,7 +28,10 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	private int _colMax;
 	private int _rowMax;
 	private int _length;
-	private int _count;
+	
+	// Estructura de datos para almacenar el recuento de animales por dieta para cada región
+	private Map<RegionData, Map<Diet, Integer>> _animalCountByRegion = new HashMap<>();
+    
 	
 	
 	RegionsTableModel(Controller ctrl) {
@@ -93,28 +98,45 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	    		
 	    		return _regions[_row][_col].r().toString();
 	    	default:
-	    		if(rowIndex < _length)
-	    		{
-			        // Calcular el índice de la dieta en base al índice de columna
-			        int dietIndex = columnIndex - 3;
-			        Diet diet = Diet.values()[dietIndex];
-			        
-			        _count = 0;
-			        // Contar animales con la dieta específica en la región actual
-			        RegionData regionData = _regions[_row][_col];
-			        
-			        for (AnimalInfo animal : regionData.r().getAnimalsInfo()) {
-			        	if (animal.get_diet() == diet) {
-			        		_count++;
-			        	}
-			        } 
-			        return _count;
-	    		}
-	    		else
-	    			return null;
+	    		 // Obtener la región correspondiente a la fila y columna especificadas
+	            RegionData region = _regions[rowIndex / _colMax][rowIndex % _colMax];
+	            // Obtener el recuento de animales de la dieta correspondiente en la región
+	            return _animalCountByRegion.get(region).get(Diet.values()[columnIndex - 3]);
 	    }
 	}
 	
+	// Método para inicializar la estructura de datos
+    private void initializeAnimalCountByRegion(MapInfo map) {
+        _animalCountByRegion.clear();
+        for (RegionData[] row : _regions) {
+            for (RegionData region : row) {
+                Map<Diet, Integer> animalCount = new HashMap<>();
+                for (Diet diet : Diet.values()) {
+                    animalCount.put(diet, 0);
+                }
+                _animalCountByRegion.put(region, animalCount);
+            }
+        }
+    }
+	
+    // Método para actualizar la estructura de datos cuando cambie la información de las regiones o de los animales
+    private void updateAnimalCountByRegion(MapInfo map) {
+        for (RegionData[] row : _regions) {
+            for (RegionData region : row) {
+                Map<Diet, Integer> animalCount = _animalCountByRegion.get(region);
+                // Reiniciar el recuento de animales en la región
+                for (Diet diet : Diet.values()) {
+                    animalCount.put(diet, 0);
+                }
+                // Actualizar el recuento de animales en la región según la información actual de los animales
+                for (AnimalInfo animal : region.r().getAnimalsInfo()) {
+                    Diet diet = animal.get_diet();
+                    animalCount.put(diet, animalCount.get(diet) + 1);
+                }
+            }
+        }
+    }
+    
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
 		_colMax = map.get_cols();
@@ -127,6 +149,8 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	                _regions[i][j] = it.next();
 	            }
 	        }
+	    initializeAnimalCountByRegion(map);
+	    updateAnimalCountByRegion(map);
 		fireTableStructureChanged();
 	}
 
@@ -142,22 +166,28 @@ class RegionsTableModel extends AbstractTableModel implements EcoSysObserver {
 	                _regions[i][j] = it.next();
 	            }
 	        }
+	    initializeAnimalCountByRegion(map);
+		updateAnimalCountByRegion(map);
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
+		updateAnimalCountByRegion(map);
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onRegionSet(int row, int col, MapInfo map, RegionInfo r) {
 		_regions[row][col] = new RegionData(row, col, r);
+		initializeAnimalCountByRegion(map);
+		updateAnimalCountByRegion(map);
 		fireTableStructureChanged();
 	}
 
 	@Override
 	public void onAvanced(double time, MapInfo map, List<AnimalInfo> animals, double dt) {
+		updateAnimalCountByRegion(map);
 		fireTableStructureChanged();
 	}
 }

@@ -1,7 +1,9 @@
 package simulator.view;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -26,12 +28,15 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	List<String> _states;
 	List<AnimalInfo> _animals;
 	
+	private Map<String, Map<State, Integer>> _animalCountByGeneticAndState;
+	
 	SpeciesTableModel(Controller ctrl) {
 		// TODO inicializar estructuras de datos correspondientes
 		_ctrl = ctrl;
 		_animals = new ArrayList<>();
 		_genetic = new ArrayList<>();
 		_states = new ArrayList<>();
+		_animalCountByGeneticAndState = new HashMap<>();
 		
 		//adding to the header the column Species and the different States
 		_header = new String[State.values().length + 1];
@@ -83,36 +88,39 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 				if (_animals == null) {
 	                return null;
 	            }
-				// Obtener el estado correspondiente al índice de la columna
-		        State state = State.values()[columnIndex - 1];
-		        int count = 0;
-		        if(rowIndex < _genetic.size())
-		        {
-		        	// Contar animales con el código genético y estado específicos
-			        for (AnimalInfo animal : _animals) {
-			            if (animal.get_genetic_code().equals(_genetic.get(rowIndex)) && animal.get_state() == state) {
-			                count++;
-			            }
-			        }
-
-			        return count;
-		        }
-		        else
-		        	return null;
+				else
+				{
+					String geneticCode = _genetic.get(rowIndex);
+		            State state = State.values()[columnIndex - 1];
+		            Map<State, Integer> animalCountByState = _animalCountByGeneticAndState.getOrDefault(geneticCode, new HashMap<>());
+		            return animalCountByState.getOrDefault(state, 0);
+				}
 		}
 	}
+	
+	 private void updateData(List<AnimalInfo> animals) {
+	        _genetic.clear();
+	        _animalCountByGeneticAndState.clear();
 
+	        for (AnimalInfo animal : animals) {
+	            String geneticCode = animal.get_genetic_code();
+	            State state = animal.get_state();
+
+	            if(!_genetic.contains(animal.get_genetic_code()))
+					_genetic.add(animal.get_genetic_code());
+
+	            Map<State, Integer> animalCountByState = _animalCountByGeneticAndState.computeIfAbsent(geneticCode, k -> new HashMap<>());
+	            animalCountByState.put(state, animalCountByState.getOrDefault(state, 0) + 1);
+	        }
+	    }
+	
 	@Override
 	public void onRegister(double time, MapInfo map, List<AnimalInfo> animals) {
 		for(AnimalInfo a : animals)
 		{
 			_animals.add(a);
 		}
-		for(AnimalInfo a : _animals)
-		{
-			if(!_genetic.contains(a.get_genetic_code()))
-				_genetic.add(a.get_genetic_code());
-		}
+		updateData(animals);
 		fireTableStructureChanged();
 	}
 
@@ -123,11 +131,7 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 		{
 			_animals.add(a);
 		}
-		for(AnimalInfo a : _animals)
-		{
-			if(!_genetic.contains(a.get_genetic_code()))
-				_genetic.add(a.get_genetic_code());
-		}
+		updateData(animals);
 		fireTableStructureChanged();
 	}
 
@@ -135,6 +139,7 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 	public void onAnimalAdded(double time, MapInfo map, List<AnimalInfo> animals, AnimalInfo a) {
 		if(!_animals.contains(a))
 			_animals.add(a);
+		updateData(animals);
 		fireTableStructureChanged();
 	}
 
@@ -151,6 +156,7 @@ class SpeciesTableModel extends AbstractTableModel implements EcoSysObserver {
 		{
 			_animals.add(a);
 		}
+		updateData(animals);
 		fireTableStructureChanged();
 		
 	}

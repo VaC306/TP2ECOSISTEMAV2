@@ -47,7 +47,8 @@ public class RegionManager implements AnimalMapView, Iterable<MapInfo.RegionData
 	void set_region(int row, int col, Region r)
 	{
 		//actualizar lista de animales de la region
-		r._animals = this._regions[row][col].getAnimals();
+		r._animals = this._regions[row][col]._animals;
+			
 		this._regions[row][col] = r;
 		for(Animal a : r._animals)
 		{
